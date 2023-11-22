@@ -19,8 +19,7 @@ instance.useRequestInterceptor({
 
 export async function getResponse() {
   try {
-    const res = await instance.request("auth/login/verify", {
-      method: "post",
+    const res = await instance.post("auth/login/verify", {
       data: { identifier: "prabingautam0123" },
     });
 
