@@ -1,6 +1,8 @@
 import "./style.css";
 import typescriptLogo from "./typescript.svg";
-// import { getResponse } from "./response.ts";
+import { getResponse } from "./response.ts";
+
+getResponse();
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
