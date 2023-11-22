@@ -5,6 +5,8 @@ import {
   CommonRequestOption,
   ConstructorProps,
   DataRequestOption,
+  HTTPErrorResponse,
+  HTTPSuccessResponse,
   RequestInterceptor,
   RequestInterceptorOption,
   RequestOptions,
@@ -64,7 +66,10 @@ export class HttpClient {
     return new Headers({ ...defaultHeaders, ...headers });
   }
 
-  async request(url: string, options: RequestOptions = {}): Promise<any> {
+  async request(
+    url: string,
+    options: RequestOptions = {}
+  ): Promise<HTTPSuccessResponse> {
     return new Promise(async (fulfilled, rejected) => {
       const {
         method = "get",
@@ -163,23 +168,23 @@ export class HttpClient {
     });
   }
 
-  get(url: string, options?: CommonRequestOption): Promise<any> {
+  get(url: string, options?: CommonRequestOption) {
     return this.request(url, { ...options, method: "get" });
   }
 
-  post(url: string, options?: DataRequestOption): Promise<any> {
+  post(url: string, options?: DataRequestOption) {
     return this.request(url, { ...options, method: "post" });
   }
 
-  put(url: string, options?: DataRequestOption): Promise<any> {
+  put(url: string, options?: DataRequestOption) {
     return this.request(url, { ...options, method: "put" });
   }
 
-  patch(url: string, options?: DataRequestOption): Promise<any> {
+  patch(url: string, options?: DataRequestOption) {
     return this.request(url, { ...options, method: "patch" });
   }
 
-  delete(url: string, options?: DataRequestOption): Promise<any> {
+  delete(url: string, options?: DataRequestOption) {
     return this.request(url, { ...options, method: "delete" });
   }
 }
