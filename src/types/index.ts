@@ -54,11 +54,20 @@ export interface HttpErrorOptions {
   name?: "HttpError" | "TimeoutError";
 }
 
-export interface HTTPErrorResponse extends HttpErrorOptions {}
 export interface HTTPSuccessResponse {
   data: any;
   headers: Record<string, string>;
   request: HttpRequest;
   status: number;
   statusText: string;
+}
+
+export interface ClientDefault {
+  baseURL?: string;
+  timeout: number;
+  headers?: Record<string, string>;
+}
+
+export interface ObjectType {
+  [key: string]: any;
 }

@@ -2,37 +2,33 @@ import HttpError from "./helper/HttpError";
 import HttpResponse from "./helper/HttpResponse";
 import getHeaders from "./helper/getHeaders";
 import {
+  ClientDefault,
   CommonRequestOption,
-  ConstructorProps,
   DataRequestOption,
-  HTTPErrorResponse,
   HTTPSuccessResponse,
   RequestInterceptor,
   RequestInterceptorOption,
   RequestOptions,
 } from "./types";
 
-export class HttpClient {
-  private static instance: HttpClient;
-  private baseURL: string;
-  private timeout: number;
+class httpClient {
+  private defaults: ClientDefault;
   private requestInterceptors: RequestInterceptor[] = [];
 
   private constructor(baseURL: string, timeout: number) {
     // Support base URL without trailing slash
-    this.baseURL = baseURL.endsWith("/")
+    const givenURL = baseURL.endsWith("/")
       ? baseURL.slice(0, baseURL.length - 1)
       : baseURL;
 
-    // If 0. there won't be a timeout
-    this.timeout = timeout;
+    this.defaults = {
+      baseURL: givenURL,
+      timeout: timeout || 0,
+    };
   }
 
-  static getInstance({ baseURL, timeout = 0 }: ConstructorProps) {
-    if (!HttpClient.instance) {
-      HttpClient.instance = new HttpClient(baseURL, timeout);
-    }
-    return HttpClient.instance;
+  create(options: ClientDefault) {
+    
   }
 
   useRequestInterceptor(interceptor: RequestInterceptor) {
@@ -52,7 +48,7 @@ export class HttpClient {
     const queryParams = new URLSearchParams(params).toString();
     const slashURL = url.startsWith("/") ? url : "/" + url;
 
-    const apiEndpoint = this.baseURL + slashURL;
+    const apiEndpoint = this.defaults.baseURL + slashURL;
 
     return `${apiEndpoint}${queryParams ? `?${queryParams}` : ""}`;
   }
@@ -103,12 +99,12 @@ export class HttpClient {
         data,
         headers: getHeaders(processedOptions.headers),
         method,
-        timeout: this.timeout,
+        timeout: this.defaults.timeout,
         url: requestURL,
       };
 
       const timeoutId = setTimeout(() => {
-        if (this.timeout) {
+        if (this.defaults.timeout) {
           controller.abort();
           rejected(
             new HttpError({
@@ -117,7 +113,7 @@ export class HttpClient {
             })
           );
         }
-      }, this.timeout);
+      }, this.defaults.timeout);
 
       try {
         const response = await fetch(requestURL, {
@@ -189,4 +185,4 @@ export class HttpClient {
   }
 }
 
-export default HttpClient;
+export default httpClient;
