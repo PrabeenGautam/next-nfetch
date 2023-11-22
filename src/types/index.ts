@@ -12,12 +12,18 @@ export interface RequestInterceptor {
   onRejected?: (error: any) => any;
 }
 
-export interface RequestOptions {
-  method?: HTTPMethod;
+export interface CommonRequestOption {
   headers?: { [key: string]: string };
-  data?: { [key: string]: string };
   params?: { [key: string]: string | number };
   cache?: RequestCache;
+}
+
+export interface DataRequestOption extends CommonRequestOption {
+  data?: { [key: string]: string };
+}
+
+export interface RequestOptions extends DataRequestOption {
+  method?: HTTPMethod;
 }
 
 export interface RequestInterceptorOption {
@@ -47,3 +53,5 @@ export interface HttpErrorOptions {
   response?: HttpResponse;
   name?: "HttpError" | "TimeoutError";
 }
+
+export interface GetOptions {}

@@ -2,7 +2,9 @@ import HttpError from "./helper/HttpError";
 import HttpResponse from "./helper/HttpResponse";
 import getHeaders from "./helper/getHeaders";
 import {
+  CommonRequestOption,
   ConstructorProps,
+  DataRequestOption,
   RequestInterceptor,
   RequestInterceptorOption,
   RequestOptions,
@@ -161,23 +163,23 @@ export class HttpClient {
     });
   }
 
-  get(url: string, options?: RequestOptions): Promise<any> {
+  get(url: string, options?: CommonRequestOption): Promise<any> {
     return this.request(url, { ...options, method: "get" });
   }
 
-  post(url: string, options?: RequestOptions): Promise<any> {
+  post(url: string, options?: DataRequestOption): Promise<any> {
     return this.request(url, { ...options, method: "post" });
   }
 
-  put(url: string, options?: RequestOptions): Promise<any> {
+  put(url: string, options?: DataRequestOption): Promise<any> {
     return this.request(url, { ...options, method: "put" });
   }
 
-  patch(url: string, options?: RequestOptions): Promise<any> {
+  patch(url: string, options?: DataRequestOption): Promise<any> {
     return this.request(url, { ...options, method: "patch" });
   }
 
-  delete(url: string, options?: RequestOptions): Promise<any> {
+  delete(url: string, options?: DataRequestOption): Promise<any> {
     return this.request(url, { ...options, method: "delete" });
   }
 }
