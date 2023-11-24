@@ -1,4 +1,11 @@
-import { HttpErrorOptions, HttpRequest, HttpResponse } from "../types";
+import { HttpRequest, HttpResponse } from "../types/global";
+
+type HttpErrorOptions = {
+  message: string;
+  request?: HttpRequest;
+  response?: HttpResponse;
+  name?: "HttpError" | "TimeoutError";
+};
 
 class HttpError {
   message: string;
@@ -7,12 +14,7 @@ class HttpError {
   name: "HttpError" | "TimeoutError";
   stack?: any;
 
-  constructor({
-    message,
-    request,
-    response,
-    name = "HttpError",
-  }: HttpErrorOptions) {
+  constructor({ message, request, response, name = "HttpError" }: HttpErrorOptions) {
     Error.call(this);
 
     this.message = message;

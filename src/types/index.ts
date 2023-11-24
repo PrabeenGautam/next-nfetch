@@ -1,4 +1,4 @@
-import { Interceptor, RequestCommonConfig } from "./global";
+import { HTTPSuccessResponse, Interceptor, RequestCommonConfig } from "./global";
 
 // Config for input
 export interface InstanceConfig extends RequestCommonConfig {
@@ -9,13 +9,13 @@ export interface BaseConfig extends RequestCommonConfig {
   url: string;
 }
 
-// Class Creator types
+// Sub Instance Types
 export type RequestMethodConfig = {
-  (entry: string | BaseConfig, config?: RequestCommonConfig): void;
-
+  (entry: string | BaseConfig, config?: RequestCommonConfig): Promise<HTTPSuccessResponse>;
   useRequestInterceptor(interceptor: Interceptor): number;
 };
 
+// Main Instance types
 export interface HTTPClientBase extends RequestMethodConfig {
   create(config: InstanceConfig): RequestMethodConfig;
 }

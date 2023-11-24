@@ -1,18 +1,10 @@
-import { HTTPMethod } from "../enum";
 import getHeaders from "../helper/getHeaders";
+import { HttpRequest } from "../types/global";
 
 interface Options {
   data: any;
   response: Response;
   request: HttpRequest;
-}
-
-interface HttpRequest {
-  data: { [key: string]: string } | undefined;
-  headers: Record<string, string>;
-  method: HTTPMethod;
-  timeout: number;
-  url: string;
 }
 
 class HttpResponse {

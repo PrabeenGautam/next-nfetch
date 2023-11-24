@@ -5,9 +5,7 @@ import HttpClient from "./core/HttpClient";
 import mergeObjects from "./helper/mergeObject";
 import { RequestCommonConfig } from "./types/global";
 
-function createInstanceNoCreate(
-  config: RequestCommonConfig
-): RequestMethodConfig {
+function createInstanceNoCreate(config: RequestCommonConfig): RequestMethodConfig {
   const instance = new HttpClient(config);
   const funcInstance = HttpClient.prototype.request.bind(instance) as any;
 
@@ -20,6 +18,8 @@ function createInstanceNoCreate(
   return funcInstance;
 }
 
+// Create the default instance to be exported and add it to the prototype chain
+// Make first instance only have create method
 function createInstance(config: RequestCommonConfig) {
   const httpClient = createInstanceNoCreate(config) as HTTPClientBase;
 

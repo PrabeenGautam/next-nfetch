@@ -26,6 +26,15 @@ export interface Interceptor {
 }
 
 /* Response Types */
+export interface HTTPSuccessResponse {
+  data: any;
+  headers: Record<string, string>;
+  request: HttpRequest;
+  status: number;
+  statusText: string;
+}
+
+/* Error Class Options */
 export interface HttpRequest {
   data: { [key: string]: string } | undefined;
   headers: Record<string, string>;
@@ -38,11 +47,4 @@ export interface HttpResponse {
   data: any;
   status: number;
   statusText: string;
-}
-
-export interface HttpErrorOptions {
-  message: string;
-  request?: HttpRequest;
-  response?: HttpResponse;
-  name?: "HttpError" | "TimeoutError";
 }

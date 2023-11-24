@@ -1,4 +1,4 @@
-import { Interceptor } from "../types";
+import { Interceptor } from "../types/global";
 
 class InterceptorManager {
   private interceptors: (Interceptor | null)[] = [];

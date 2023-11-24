@@ -1,5 +1,5 @@
 import { HTTPMethod } from "../enum";
-import { RequestCommonConfig } from "../types";
+import { RequestCommonConfig } from "../types/global";
 
 export const commonHeaders = {
   "Content-Type": "application/json",
