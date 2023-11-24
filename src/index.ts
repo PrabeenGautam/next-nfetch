@@ -1,12 +1,26 @@
 import HttpClient from "./core/HttpClient";
 import defaults from "./default";
-import { InstanceConfig, RequestCommonConfig } from "./types";
+import mergeObjects from "./helper/mergeObject";
+import {
+  InstanceConfig,
+  RequestCommonConfig,
+  HTTPRequestConfig,
+} from "./types";
 
 function createInstance(config: RequestCommonConfig) {
-  const httpClient = new HttpClient(defaults);
+  const httpClient = new HttpClient(config);
+  const instance = HttpClient.prototype.request.bind(
+    httpClient
+  ) as HTTPRequestConfig;
 
-  // const instance = bind(Axios.prototype.request, context);
+  instance["create"] = function create(instanceConfig: InstanceConfig) {
+    const mergedConfig = mergeObjects(defaults, instanceConfig);
+    return createInstance(mergedConfig);
+  };
 
-  httpClient.create = function create(instanceConfig: InstanceConfig) {};
-  return httpClient;
+  return instance;
 }
+
+const httpClient = createInstance(defaults);
+
+export default httpClient;

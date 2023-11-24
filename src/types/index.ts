@@ -48,3 +48,15 @@ export interface HttpErrorOptions {
   response?: HttpResponse;
   name?: "HttpError" | "TimeoutError";
 }
+
+export interface Interceptor {
+  onFulfilled?: (config: any) => Promise<any>;
+  onRejected?: (error: any) => Promise<any>;
+}
+
+export interface HTTPRequestConfig {
+  (entry: string | BaseConfig, config?: RequestCommonConfig): void;
+
+  // Methods
+  create(instanceConfig: InstanceConfig): void;
+}
