@@ -1,5 +1,5 @@
 import { HTTPMethod } from "../types";
-import getHeaders from "./getHeaders";
+import getHeaders from "../helper/getHeaders";
 
 interface Options {
   data: any;
