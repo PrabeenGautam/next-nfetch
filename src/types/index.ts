@@ -1,25 +1,6 @@
-import { HTTPMethod, HttpHeaders } from "../enum";
+import { Interceptor, RequestCommonConfig } from "./global";
 
-type HttpRequestHeaders = { [key in HttpHeaders]?: string } & {
-  [key: string]: string;
-};
-
-interface NextFetchRequestConfig {
-  revalidate?: number | false;
-  tags?: string[];
-}
-
-export type RequestCommonConfig = {
-  method?: HTTPMethod;
-  headers?: HttpRequestHeaders;
-  data?: any;
-  params?: Record<string, any>;
-  cache?: RequestCache;
-  next?: NextFetchRequestConfig;
-  timeout?: number;
-  timeoutMessage?: string;
-};
-
+// Config for input
 export interface InstanceConfig extends RequestCommonConfig {
   baseURL: string;
 }
@@ -28,35 +9,13 @@ export interface BaseConfig extends RequestCommonConfig {
   url: string;
 }
 
-export interface HttpRequest {
-  data: { [key: string]: string } | undefined;
-  headers: Record<string, string>;
-  method: HTTPMethod;
-  timeout: number;
-  url: string;
-}
-
-export interface HttpResponse {
-  data: any;
-  status: number;
-  statusText: string;
-}
-
-export interface HttpErrorOptions {
-  message: string;
-  request?: HttpRequest;
-  response?: HttpResponse;
-  name?: "HttpError" | "TimeoutError";
-}
-
-export interface Interceptor {
-  onFulfilled?: (config: any) => Promise<any>;
-  onRejected?: (error: any) => Promise<any>;
-}
-
-export interface HTTPRequestConfig {
+// Class Creator types
+export type RequestMethodConfig = {
   (entry: string | BaseConfig, config?: RequestCommonConfig): void;
 
-  // Methods
-  create(instanceConfig: InstanceConfig): void;
+  useRequestInterceptor(interceptor: Interceptor): number;
+};
+
+export interface HTTPClientBase extends RequestMethodConfig {
+  create(config: InstanceConfig): RequestMethodConfig;
 }

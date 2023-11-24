@@ -1,7 +1,7 @@
-import { RequestCommonConfig, BaseConfig, Interceptor } from "../types";
+import { BaseConfig } from "../types";
 import InterceptorManager from "./InterceptorManager";
-import defaults from "../default";
 import mergeObjects from "../helper/mergeObject";
+import { Interceptor, RequestCommonConfig } from "../types/global";
 
 class HttpClient {
   private defaults;
@@ -17,9 +17,7 @@ class HttpClient {
 
     const instanceConfig = isString ? { ...config, url: entry } : entry;
 
-    let requestConfig: BaseConfig = mergeObjects(defaults, instanceConfig);
-
-    console.log(requestConfig);
+    let requestConfig: BaseConfig = mergeObjects(this.defaults, instanceConfig);
   }
 
   useRequestInterceptor(interceptor: Interceptor) {
