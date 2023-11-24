@@ -9,7 +9,7 @@ interface NextFetchRequestConfig {
   tags?: string[];
 }
 
-export type HTTPRequestConfig = {
+export type RequestCommonConfig = {
   method?: HTTPMethod;
   headers?: HttpRequestHeaders;
   data?: any;
@@ -20,6 +20,31 @@ export type HTTPRequestConfig = {
   timeoutMessage?: string;
 };
 
-export interface HTTPInstanceConfig extends HTTPRequestConfig {
+export interface InstanceConfig extends RequestCommonConfig {
   baseURL: string;
+}
+
+export interface BaseConfig extends RequestCommonConfig {
+  url: string;
+}
+
+export interface HttpRequest {
+  data: { [key: string]: string } | undefined;
+  headers: Record<string, string>;
+  method: HTTPMethod;
+  timeout: number;
+  url: string;
+}
+
+export interface HttpResponse {
+  data: any;
+  status: number;
+  statusText: string;
+}
+
+export interface HttpErrorOptions {
+  message: string;
+  request?: HttpRequest;
+  response?: HttpResponse;
+  name?: "HttpError" | "TimeoutError";
 }

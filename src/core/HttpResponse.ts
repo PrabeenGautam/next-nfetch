@@ -1,4 +1,4 @@
-import { HTTPMethod } from "../types";
+import { HTTPMethod } from "../enum";
 import getHeaders from "../helper/getHeaders";
 
 interface Options {
