@@ -18,6 +18,8 @@ class HttpClient {
     const instanceConfig = isString ? { ...config, url: entry } : entry;
 
     let requestConfig: BaseConfig = mergeObjects(this.defaults, instanceConfig);
+
+    console.log(requestConfig);
   }
 
   useRequestInterceptor(interceptor: Interceptor) {
