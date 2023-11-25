@@ -36,8 +36,14 @@ export interface RequestWithUrlConfig extends RequestCommonConfig {
   url?: string;
 }
 
+export interface RequestInterceptorOption {
+  headers: Headers;
+  cache: RequestCache;
+  next: NextFetchRequestConfig;
+}
+
 export interface Interceptor {
-  onFulfilled?: (config: any) => Promise<any>;
+  onFulfilled?: (config: RequestInterceptorOption) => any | Promise<any>;
   onRejected?: (error: any) => Promise<any>;
 }
 
