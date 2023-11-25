@@ -5,6 +5,7 @@ import { Interceptor, RequestCommonConfig, RequestWithUrlConfig } from "../types
 import getHeaders from "../helper/getHeaders";
 import HttpError from "./HttpError";
 import HttpResponse from "./HttpResponse";
+import fetchData from "./fetchData";
 
 class HttpClient {
   private defaults: RequestWithUrlConfig;
@@ -15,7 +16,7 @@ class HttpClient {
     this.requestInterceptors = new InterceptorManager();
   }
 
-  request(entry: string | BaseConfig, config: RequestCommonConfig = {}) {
+  request(entry: URL | BaseConfig, config: RequestCommonConfig = {}) {
     return new Promise(async (resolve, reject) => {
       const isString = typeof entry === "string";
       const instanceConfig = isString ? { ...config, url: entry } : entry;
@@ -40,17 +41,14 @@ class HttpClient {
         body: requestConfig.data ? JSON.stringify(requestConfig.data) : requestConfig.data,
       };
 
-      if (["get", "head"].includes(requestOptions.method!.toLowerCase())) {
+      if (["get", "head", "options"].includes(requestOptions.method!.toLowerCase())) {
         delete (requestOptions as any).body;
       }
 
-      await this.executeRequestInterceptors(requestOptions);
       const endpoint = this.buildUrl(requestConfig.url, requestConfig.params);
+      requestObject.url = endpoint;
 
       const controller = new AbortController();
-
-      requestObject.url = endpoint;
-      requestObject.headers = getHeaders(requestOptions.headers);
 
       const timeoutId = setTimeout(() => {
         if (this.defaults.timeout) {
@@ -65,12 +63,10 @@ class HttpClient {
       }, this.defaults.timeout);
 
       try {
-        const response = await fetch(endpoint, {
-          ...requestOptions,
-          signal: controller.signal,
-        });
+        await this.executeRequestInterceptors(requestOptions);
+        requestObject.headers = getHeaders(requestOptions.headers);
 
-        const resData = await response.json();
+        const { resData, response } = await fetchData(endpoint, requestOptions, controller);
 
         if (response.ok) {
           resolve(

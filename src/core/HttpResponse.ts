@@ -13,12 +13,13 @@ class HttpResponse {
   request: HttpRequest;
   status: number;
   statusText: string;
+  response: Response;
 
   constructor(options: Options) {
     this.data = options.data;
     this.headers = getHeaders(options.response.headers);
     this.request = options.request;
-
+    this.response = options.response;
     this.status = options.response.status;
     this.statusText = options.response.statusText;
   }

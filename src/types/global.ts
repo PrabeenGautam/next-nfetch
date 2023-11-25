@@ -1,15 +1,6 @@
 import { HttpHeaders } from "../enum";
 
-export type HTTPMethod =
-  | "get"
-  | "post"
-  | "put"
-  | "delete"
-  | "patch"
-  | "head"
-  | "options"
-  | "connect"
-  | "trace";
+export type HTTPMethod = "get" | "post" | "put" | "delete" | "patch" | "head" | "options";
 
 export type HttpRequestHeaders = { [key in HttpHeaders]?: string } & {
   [key: string]: string;
@@ -52,6 +43,7 @@ export interface HTTPSuccessResponse {
   data: any;
   headers: Record<string, string>;
   request: HttpRequest;
+  response: Response;
   status: number;
   statusText: string;
 }

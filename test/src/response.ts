@@ -2,8 +2,7 @@ import httpClient from "../../src";
 
 export async function getResponse() {
   const instance = httpClient.create({
-    baseURL: "http://www.localhost:8000/",
-    timeout: 1000,
+    baseURL: "https://jsonplaceholder.typicode.com/",
   });
 
   instance.useRequestInterceptor({
@@ -12,22 +11,14 @@ export async function getResponse() {
       return config;
     },
     onRejected: (error) => {
-      console.log("onRejected", error);
       return Promise.reject(error);
     },
   });
 
   try {
-    await instance("/api/demo", {
-      headers: {
-        "Accept-Charset": "demo",
-        "Content-Type": "demo",
-      },
-      method: "post",
-      data: {
-        name: "demo",
-      },
-    });
+    const response = await httpClient("/posts");
+
+    console.log(response);
   } catch (error) {
     console.log(error);
   }

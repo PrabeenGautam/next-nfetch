@@ -1,7 +1,7 @@
 import { Interceptor } from "../types/global";
 
 class InterceptorManager {
-  private interceptors: (Interceptor | null)[] = [];
+  private interceptors: (Interceptor | undefined)[] = [];
 
   use(interceptor: Interceptor) {
     this.interceptors.push(interceptor);
@@ -10,7 +10,7 @@ class InterceptorManager {
 
   eject(id: number) {
     if (this.interceptors[id]) {
-      this.interceptors[id] = null;
+      this.interceptors[id] = undefined;
     }
   }
 
@@ -24,7 +24,7 @@ class InterceptorManager {
     let chain: Promise<any> = Promise.resolve(config);
 
     this.interceptors.forEach((interceptor) => {
-      if (interceptor !== null) {
+      if (interceptor !== undefined) {
         chain = chain.then(
           (conf) => interceptor.onFulfilled && interceptor.onFulfilled(conf),
           (error) => interceptor.onRejected && interceptor.onRejected(error)
