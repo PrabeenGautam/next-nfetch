@@ -9,11 +9,15 @@ export const commonHeaders = {
 const defaults: RequestCommonConfig = {
   cache: "no-cache",
   data: undefined,
-  method: HTTPMethod.GET,
+  method: "get",
   timeout: 0,
   timeoutMessage: "Network Error. Failed to fetch",
   params: {},
   headers: commonHeaders,
+  next: {
+    revalidate: false,
+    tags: [],
+  },
 };
 
 export default defaults;

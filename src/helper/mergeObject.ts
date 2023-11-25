@@ -7,6 +7,10 @@ function mergeObjects(...objects: any[]) {
         ...(merged.headers || {}),
         ...(currentObject.headers || {}),
       },
+      next: {
+        ...(merged.next || {}),
+        ...(currentObject.next || {}),
+      },
     };
   }, {});
 }

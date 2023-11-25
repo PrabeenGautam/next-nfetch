@@ -1,4 +1,15 @@
-import { HTTPMethod, HttpHeaders } from "../enum";
+import { HttpHeaders } from "../enum";
+
+export type HTTPMethod =
+  | "get"
+  | "post"
+  | "put"
+  | "delete"
+  | "patch"
+  | "head"
+  | "options"
+  | "connect"
+  | "trace";
 
 export type HttpRequestHeaders = { [key in HttpHeaders]?: string } & {
   [key: string]: string;
@@ -9,7 +20,7 @@ export interface NextFetchRequestConfig {
   tags?: string[];
 }
 
-export type RequestCommonConfig = {
+export interface RequestCommonConfig {
   method?: HTTPMethod;
   headers?: HttpRequestHeaders;
   data?: any;
@@ -18,7 +29,12 @@ export type RequestCommonConfig = {
   next?: NextFetchRequestConfig;
   timeout?: number;
   timeoutMessage?: string;
-};
+}
+
+export interface RequestWithUrlConfig extends RequestCommonConfig {
+  baseURL?: string;
+  url?: string;
+}
 
 export interface Interceptor {
   onFulfilled?: (config: any) => Promise<any>;
