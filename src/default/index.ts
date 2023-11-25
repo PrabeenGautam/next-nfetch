@@ -12,9 +12,6 @@ const defaults: RequestCommonConfig = {
   timeoutMessage: "Request Timeout. Failed to fetch",
   params: {},
   headers: commonHeaders,
-  next: {
-    tags: [],
-  },
 };
 
 export default defaults;
