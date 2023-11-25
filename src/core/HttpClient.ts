@@ -10,6 +10,8 @@ import {
   RequestInterceptor,
   RequestCommonConfig,
   RequestWithUrlConfig,
+  RequestNoDataWithURLConfig,
+  RequestWithDataWithURLConfig,
 } from "../types/global";
 
 class HttpClient {
@@ -152,7 +154,22 @@ class HttpClient {
 // method with no body
 ["delete", "get", "head", "options"].forEach((m) => {
   // @ts-ignore
-  HttpClient.prototype[m] = function (entry: URL | BaseRequestConfig, config?: any = {}) {
+  HttpClient.prototype[m] = function (entry: URL | RequestNoDataWithURLConfig, config?: any = {}) {
+    const isString = typeof entry === "string";
+    const method = m as HTTPMethod;
+
+    if (isString) {
+      return this.request(entry, { ...config, method });
+    } else {
+      return this.request({ ...entry, method });
+    }
+  };
+});
+
+// method with body
+["post", "put", "patch"].forEach((m) => {
+  // @ts-ignore
+  HttpClient.prototype[m] = function (entry: URL | RequestWithDataWithURLConfig, config?: any) {
     const isString = typeof entry === "string";
     const method = m as HTTPMethod;
 
