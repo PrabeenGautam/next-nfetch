@@ -14,7 +14,6 @@ const defaults: RequestCommonConfig = {
   params: {},
   headers: commonHeaders,
   next: {
-    revalidate: false,
     tags: [],
   },
 };
