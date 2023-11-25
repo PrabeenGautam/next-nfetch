@@ -1,4 +1,3 @@
-import { HTTPMethod } from "../enum";
 import { RequestCommonConfig } from "../types/global";
 
 export const commonHeaders = {

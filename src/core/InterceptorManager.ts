@@ -1,9 +1,9 @@
-import { Interceptor } from "../types/global";
+import { RequestInterceptor } from "../types/global";
 
 class InterceptorManager {
-  private interceptors: (Interceptor | undefined)[] = [];
+  private interceptors: (RequestInterceptor | undefined)[] = [];
 
-  use(interceptor: Interceptor) {
+  use(interceptor: RequestInterceptor) {
     this.interceptors.push(interceptor);
     return this.interceptors.length - 1; // Return the index for removal later
   }
