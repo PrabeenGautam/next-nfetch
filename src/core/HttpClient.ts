@@ -1,11 +1,16 @@
-import { BaseConfig } from "../types";
+import { BaseRequestConfig } from "../types";
 import InterceptorManager from "./InterceptorManager";
 import mergeObjects from "../helper/mergeObject";
-import { Interceptor, RequestCommonConfig, RequestWithUrlConfig } from "../types/global";
 import getHeaders from "../helper/getHeaders";
 import HttpError from "./HttpError";
 import HttpResponse from "./HttpResponse";
 import fetchData from "./fetchData";
+import {
+  HTTPMethod,
+  RequestInterceptor,
+  RequestCommonConfig,
+  RequestWithUrlConfig,
+} from "../types/global";
 
 class HttpClient {
   private defaults: RequestWithUrlConfig;
@@ -16,12 +21,12 @@ class HttpClient {
     this.requestInterceptors = new InterceptorManager();
   }
 
-  request(entry: URL | BaseConfig, config: RequestCommonConfig = {}) {
+  request(entry: URL | BaseRequestConfig, config: RequestCommonConfig = {}) {
     return new Promise(async (resolve, reject) => {
       const isString = typeof entry === "string";
       const instanceConfig = isString ? { ...config, url: entry } : entry;
 
-      let requestConfig = mergeObjects(this.defaults, instanceConfig) as BaseConfig;
+      let requestConfig = mergeObjects(this.defaults, instanceConfig) as BaseRequestConfig;
 
       const requestObject = {
         data: requestConfig.data,
@@ -50,17 +55,20 @@ class HttpClient {
 
       const controller = new AbortController();
 
+      const timeout = requestConfig.timeout || this.defaults.timeout;
+      const timeoutMessage = requestConfig.timeoutMessage || this.defaults.timeoutMessage;
+
       const timeoutId = setTimeout(() => {
-        if (this.defaults.timeout) {
+        if (timeout) {
           controller.abort();
           reject(
             new HttpError({
-              message: this.defaults.timeoutMessage || "Request Timeout",
+              message: timeoutMessage || "Request Timeout",
               request: requestObject,
             })
           );
         }
-      }, this.defaults.timeout);
+      }, timeout);
 
       try {
         await this.executeRequestInterceptors(requestOptions);
@@ -110,7 +118,7 @@ class HttpClient {
     });
   }
 
-  useRequestInterceptor(interceptor: Interceptor) {
+  useRequestInterceptor(interceptor: RequestInterceptor) {
     return this.requestInterceptors.use(interceptor);
   }
 
@@ -140,5 +148,20 @@ class HttpClient {
     return new Headers(headers);
   }
 }
+
+// method with no body
+["delete", "get", "head", "options"].forEach((m) => {
+  // @ts-ignore
+  HttpClient.prototype[m] = function (entry: URL | BaseRequestConfig, config?: any = {}) {
+    const isString = typeof entry === "string";
+    const method = m as HTTPMethod;
+
+    if (isString) {
+      return this.request(entry, { ...config, method });
+    } else {
+      return this.request({ ...entry, method });
+    }
+  };
+});
 
 export default HttpClient;

@@ -1,16 +1,16 @@
 import getHeaders from "../helper/getHeaders";
-import { HttpRequest } from "../types/global";
+import { HTTPRequestDetails } from "../types/global";
 
 interface Options {
   data: any;
   response: Response;
-  request: HttpRequest;
+  request: HTTPRequestDetails;
 }
 
 class HttpResponse {
   data: any;
   headers: Record<string, string>;
-  request: HttpRequest;
+  request: HTTPRequestDetails;
   status: number;
   statusText: string;
   response: Response;

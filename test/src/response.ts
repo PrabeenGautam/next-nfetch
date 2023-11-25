@@ -1,24 +1,11 @@
 import httpClient from "../../src";
 
 export async function getResponse() {
-  const instance = httpClient.create({
-    baseURL: "https://jsonplaceholder.typicode.com/",
-  });
-
-  instance.useRequestInterceptor({
-    onFulfilled: (config) => {
-      config.headers.set("Authorization", "demo");
-      return config;
-    },
-    onRejected: (error) => {
-      return Promise.reject(error);
-    },
-  });
-
   try {
-    const response = await httpClient("/posts");
-
-    console.log(response);
+    const response = await httpClient.get({
+      url: "https://jsonplaceholder.typicode.com/todos/1",
+    });
+    console.log(response.data);
   } catch (error) {
     console.log(error);
   }

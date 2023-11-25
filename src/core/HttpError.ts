@@ -1,16 +1,16 @@
-import { HttpRequest, HttpResponse } from "../types/global";
+import { HTTPRequestDetails, HTTPResponseDetails } from "../types/global";
 
 type HttpErrorOptions = {
   message: string;
-  request?: HttpRequest;
-  response?: HttpResponse;
+  request?: HTTPRequestDetails;
+  response?: HTTPResponseDetails;
   name?: "HttpError" | "TimeoutError";
 };
 
 class HttpError {
   message: string;
-  request?: HttpRequest;
-  response?: HttpResponse;
+  request?: HTTPRequestDetails;
+  response?: HTTPResponseDetails;
   name: "HttpError" | "TimeoutError";
   stack?: any;
 
