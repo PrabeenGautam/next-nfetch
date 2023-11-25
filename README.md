@@ -23,6 +23,7 @@
 - Make http requests from browser and node js
 - Intercept request
 - Formatted Response and Error configuration
+- Support Nextjs cache and revalidate
 
 ## Built With
 
@@ -35,21 +36,90 @@ Typescript and built in browser fetch
 Using npm:
 
 ```bash
-$ npm install next-nfetch
+$ npm install next-nfetch@latest
 ```
 
 Once the package is installed, you can import the library using `import` or `require` approach:
 
 ```js
-import { HttpClient } from "next-nfetch";
+import httpClient from "next-nfetch";
 ```
 
-If you use `require` for importing, **only default export is available**:
+Or
 
 ```js
-const { HttpClient } = require('next-nfetch');
+const httpClient = require('next-nfetch');
+```
 
-HttpClient.getInstance(...)
+### Usage
+
+You can directly call a function as default exported is a function. There are lots of methods attach to the base function such as get, post, put, etc. 
+
+Function Can ba called as:
+
+```js
+const response = httpClient("url", options) // or
+const response = httpClient({
+  ...options, // Available options are listed below
+  url
+})
+```
+
+| options | types | default | required
+|----------------|------------------------------------------------------------------------|----------------------------------------------|----|
+| url            | string        |                                       | yes                                 
+| method         | string        | get                                   | no
+| headers        | Headers       |                                       | no
+| params         | Object        | { }                                   | no
+| next           | Object        | { revalidate = false, tags: [ ] }     | no
+| data           | any           | undefined                             | no                            
+| timeout        | number        | 0                                     | no                                         
+| cache          | RequestCache  | no-cache                              | no
+| timeoutMessage | string        | Request Timeout. Failed to fetch      | no   
+
+
+#### Methods with no data attributes
+> get, delete, options and head
+
+#### Methods with data attributes
+> post. put and patch
+
+### Specific methods
+
+```js
+const response  = await httpClient.get("url", options);
+const response  = await httpClient.delete("url", options);
+
+const response  = await httpClient.post("url", options);
+const response  = await httpClient.patch("url", options);
+```
+
+and so on
+
+### Response format
+#### API Success Response
+
+```js
+{
+  data: any; // obtained data from api endpoint
+  headers: Record<string, string>; // response headers
+  request: HTTPRequestDetails; // request configuration
+  response: Response; // actual response send by fetch request
+  status: number; // http status code
+  statusText: string;
+}
+```
+
+#### API Error Response
+
+```js
+{
+  message: string; // error message
+  request?: HTTPRequestDetails; // request configuration
+  response?: HTTPResponseDetails; // error response details
+  name: "HttpError" | "TimeoutError";
+  stack?: any; // stack trace where error occurs
+}
 ```
 
 ### Creating an instance
@@ -57,27 +127,19 @@ HttpClient.getInstance(...)
 You can create a new instance of next-nfetch with a custom config.
 
 ```js
-const instance = HttpClient.getInstance({
+const instance = httpClient.create({
   baseURL: "https://some-domain.com/api/",
   timeout: 1000,
 });
 ```
 
-It will create a new instance if any instance is not created before else will use previously created instance.
-
 ### Requesting from httpclient
 
 ```js
 try {
-  const res = await instance.request("url", {
-    method: "post",
-    data: {},
-    cache,
-    headers,
-    params,
-  });
-
+  const res = await instance.get("/users/1", options);
   console.log(res);
+  
 } catch (error) {
   console.log(error);
 }
@@ -99,16 +161,6 @@ instance.useRequestInterceptor({
     return Promise.reject(error);
   },
 });
-```
-
-### Specific methods
-
-Supported methods are get, post, patch, delete and put
-
-```js
-instance.post("url", { cache, data, headers, method, params });
-
-instance.get("url", { cache, headers, method, params });
 ```
 
 ## Roadmap
