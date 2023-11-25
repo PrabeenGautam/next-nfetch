@@ -1,188 +1,36 @@
-import HttpError from "./helper/HttpError";
-import HttpResponse from "./helper/HttpResponse";
-import getHeaders from "./helper/getHeaders";
-import {
-  ClientDefault,
-  CommonRequestOption,
-  DataRequestOption,
-  HTTPSuccessResponse,
-  RequestInterceptor,
-  RequestInterceptorOption,
-  RequestOptions,
-} from "./types";
+import defaults from "./default";
+import { extend } from "./lib/utils";
+import { HTTPClientBase, InstanceConfig, RequestMethodConfig } from "./types";
+import HttpClient from "./core/HttpClient";
+import mergeObjects from "./helper/mergeObject";
+import { RequestCommonConfig } from "./types/global";
 
-class httpClient {
-  private defaults: ClientDefault;
-  private requestInterceptors: RequestInterceptor[] = [];
+function createInstanceNoCreate(config: RequestCommonConfig): RequestMethodConfig {
+  const instance = new HttpClient(config);
+  const funcInstance = HttpClient.prototype.request.bind(instance) as any;
 
-  private constructor(baseURL: string, timeout: number) {
-    // Support base URL without trailing slash
-    const givenURL = baseURL.endsWith("/")
-      ? baseURL.slice(0, baseURL.length - 1)
-      : baseURL;
+  // Copy class methods to function instance
+  extend(HttpClient.prototype, funcInstance, instance);
 
-    this.defaults = {
-      baseURL: givenURL,
-      timeout: timeout || 0,
-    };
-  }
+  // Copy class properties to function instance
+  extend(instance, funcInstance);
 
-  create(options: ClientDefault) {
-    
-  }
-
-  useRequestInterceptor(interceptor: RequestInterceptor) {
-    this.requestInterceptors.push(interceptor);
-  }
-
-  private async executeRequestInterceptors(config: RequestInterceptorOption) {
-    return this.requestInterceptors.reduce(async (acc, interceptor) => {
-      const processedConfig = await acc;
-      return interceptor.onFulfilled
-        ? interceptor.onFulfilled(processedConfig)
-        : processedConfig;
-    }, Promise.resolve(config));
-  }
-
-  private buildUrl(url: string, params?: any): string {
-    const queryParams = new URLSearchParams(params).toString();
-    const slashURL = url.startsWith("/") ? url : "/" + url;
-
-    const apiEndpoint = this.defaults.baseURL + slashURL;
-
-    return `${apiEndpoint}${queryParams ? `?${queryParams}` : ""}`;
-  }
-
-  private buildHeaders(headers?: { [key: string]: string }): Headers {
-    const defaultHeaders = {
-      "Content-Type": "application/json",
-      Accept: "application/json, text/plain, */*",
-    };
-
-    return new Headers({ ...defaultHeaders, ...headers });
-  }
-
-  async request(
-    url: string,
-    options: RequestOptions = {}
-  ): Promise<HTTPSuccessResponse> {
-    return new Promise(async (fulfilled, rejected) => {
-      const {
-        method = "get",
-        headers = {},
-        data = undefined,
-        params,
-        cache = "no-store",
-      } = options;
-
-      const controller = new AbortController();
-
-      const requestURL = this.buildUrl(url, params);
-      const requestHeaders = this.buildHeaders(headers);
-
-      const requestOptions = {
-        method,
-        headers: requestHeaders,
-        cache,
-        body: data ? JSON.stringify(data) : data,
-      };
-
-      if (["get", "head"].includes(method.toLowerCase())) {
-        delete (requestOptions as any).body;
-      }
-
-      const processedOptions = await this.executeRequestInterceptors(
-        requestOptions
-      );
-
-      const requestConfig = {
-        data,
-        headers: getHeaders(processedOptions.headers),
-        method,
-        timeout: this.defaults.timeout,
-        url: requestURL,
-      };
-
-      const timeoutId = setTimeout(() => {
-        if (this.defaults.timeout) {
-          controller.abort();
-          rejected(
-            new HttpError({
-              message: "Request timeout",
-              request: requestConfig,
-            })
-          );
-        }
-      }, this.defaults.timeout);
-
-      try {
-        const response = await fetch(requestURL, {
-          ...processedOptions,
-          signal: controller.signal,
-        });
-
-        const resData = await response.json();
-
-        if (response.ok) {
-          fulfilled(
-            new HttpResponse({
-              data: resData,
-              request: requestConfig,
-              response,
-            })
-          );
-        } else {
-          rejected(
-            new HttpError({
-              message: `Request failed with status ${response.status}`,
-              request: requestConfig,
-              response: {
-                data: resData,
-                status: response.status,
-                statusText: response.statusText,
-              },
-            })
-          );
-        }
-      } catch (error) {
-        const networkError =
-          error instanceof TypeError && error.message === "Failed to fetch";
-
-        if (networkError) {
-          rejected(
-            new HttpError({
-              message: `Network Error. Failed to fetch`,
-              name: "TimeoutError",
-              request: requestConfig,
-            })
-          );
-        }
-        rejected(error);
-      } finally {
-        clearTimeout(timeoutId);
-      }
-    });
-  }
-
-  get(url: string, options?: CommonRequestOption) {
-    return this.request(url, { ...options, method: "get" });
-  }
-
-  post(url: string, options?: DataRequestOption) {
-    return this.request(url, { ...options, method: "post" });
-  }
-
-  put(url: string, options?: DataRequestOption) {
-    return this.request(url, { ...options, method: "put" });
-  }
-
-  patch(url: string, options?: DataRequestOption) {
-    return this.request(url, { ...options, method: "patch" });
-  }
-
-  delete(url: string, options?: DataRequestOption) {
-    return this.request(url, { ...options, method: "delete" });
-  }
+  return funcInstance;
 }
+
+// Create the default instance to be exported and add it to the prototype chain
+// Make first instance only have create method
+function createInstance(config: RequestCommonConfig) {
+  const httpClient = createInstanceNoCreate(config) as HTTPClientBase;
+
+  httpClient.create = function create(config: InstanceConfig) {
+    const mergedConfig = mergeObjects(defaults, config);
+    return createInstanceNoCreate(mergedConfig);
+  };
+
+  return httpClient;
+}
+
+const httpClient = createInstance(defaults);
 
 export default httpClient;

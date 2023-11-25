@@ -1,73 +1,43 @@
-export interface ConstructorProps {
+import {
+  HTTPSuccessResponse,
+  RequestInterceptor,
+  RequestCommonConfig,
+  RequestNoDataConfig,
+  RequestNoDataWithURLConfig,
+  RequestWithDataWithURLConfig,
+  RequestWithDataConfig,
+} from "./global";
+
+// Config for input
+export interface InstanceConfig extends RequestCommonConfig {
   baseURL: string;
-  timeout?: number;
 }
 
-export type HTTPMethod = "get" | "post" | "patch" | "put" | "delete" | "head";
-
-export interface RequestInterceptor {
-  onFulfilled?: (
-    config: RequestInterceptorOption
-  ) => RequestInterceptorOption | Promise<RequestInterceptorOption>;
-  onRejected?: (error: any) => any;
-}
-
-export interface CommonRequestOption {
-  headers?: { [key: string]: string };
-  params?: { [key: string]: string | number };
-  cache?: RequestCache;
-}
-
-export interface DataRequestOption extends CommonRequestOption {
-  data?: { [key: string]: string };
-}
-
-export interface RequestOptions extends DataRequestOption {
-  method?: HTTPMethod;
-}
-
-export interface RequestInterceptorOption {
-  method: HTTPMethod;
-  headers: Headers;
-  body: string | undefined;
-  cache: RequestCache;
-}
-
-export interface HttpRequest {
-  data: { [key: string]: string } | undefined;
-  headers: Record<string, string>;
-  method: HTTPMethod;
-  timeout: number;
+export interface BaseRequestConfig extends RequestCommonConfig {
   url: string;
 }
 
-export interface HttpResponse {
-  data: any;
-  status: number;
-  statusText: string;
-}
+type RequestMethod<T, U> = (entry: string | T, config?: U) => Promise<HTTPSuccessResponse>;
 
-export interface HttpErrorOptions {
-  message: string;
-  request?: HttpRequest;
-  response?: HttpResponse;
-  name?: "HttpError" | "TimeoutError";
-}
+// Sub Instance Types
+export type RequestMethodConfig = {
+  (entry: string | BaseRequestConfig, config?: RequestCommonConfig): Promise<HTTPSuccessResponse>;
 
-export interface HTTPSuccessResponse {
-  data: any;
-  headers: Record<string, string>;
-  request: HttpRequest;
-  status: number;
-  statusText: string;
-}
+  useRequestInterceptor: (interceptor: RequestInterceptor) => number;
 
-export interface ClientDefault {
-  baseURL?: string;
-  timeout: number;
-  headers?: Record<string, string>;
-}
+  // method with no body
+  get: RequestMethod<RequestNoDataWithURLConfig, RequestNoDataConfig>;
+  delete: RequestMethod<RequestNoDataWithURLConfig, RequestNoDataConfig>;
+  head: RequestMethod<RequestNoDataWithURLConfig, RequestNoDataConfig>;
+  options: RequestMethod<RequestNoDataWithURLConfig, RequestNoDataConfig>;
 
-export interface ObjectType {
-  [key: string]: any;
+  // method with body
+  post: RequestMethod<RequestWithDataWithURLConfig, RequestWithDataConfig>;
+  put: RequestMethod<RequestWithDataWithURLConfig, RequestWithDataConfig>;
+  patch: RequestMethod<RequestWithDataWithURLConfig, RequestWithDataConfig>;
+};
+
+// Main Instance types
+export interface HTTPClientBase extends RequestMethodConfig {
+  create(config: InstanceConfig): RequestMethodConfig;
 }

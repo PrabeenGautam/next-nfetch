@@ -1,32 +1,25 @@
-import { HTTPMethod } from "../types";
-import getHeaders from "./getHeaders";
+import getHeaders from "../helper/getHeaders";
+import { HTTPRequestDetails } from "../types/global";
 
 interface Options {
   data: any;
   response: Response;
-  request: HttpRequest;
-}
-
-interface HttpRequest {
-  data: { [key: string]: string } | undefined;
-  headers: Record<string, string>;
-  method: HTTPMethod;
-  timeout: number;
-  url: string;
+  request: HTTPRequestDetails;
 }
 
 class HttpResponse {
   data: any;
   headers: Record<string, string>;
-  request: HttpRequest;
+  request: HTTPRequestDetails;
   status: number;
   statusText: string;
+  response: Response;
 
   constructor(options: Options) {
     this.data = options.data;
     this.headers = getHeaders(options.response.headers);
     this.request = options.request;
-
+    this.response = options.response;
     this.status = options.response.status;
     this.statusText = options.response.statusText;
   }

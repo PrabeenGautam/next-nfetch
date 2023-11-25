@@ -1,0 +1,33 @@
+export enum HttpHeaders {
+  Accept = "Accept",
+  AcceptCharset = "Accept-Charset",
+  AcceptEncoding = "Accept-Encoding",
+  AcceptLanguage = "Accept-Language",
+  Authorization = "Authorization",
+  CacheControl = "Cache-Control",
+  Connection = "Connection",
+  ContentLength = "Content-Length",
+  ContentType = "Content-Type",
+  Cookie = "Cookie",
+  Date = "Date",
+  Host = "Host",
+  IfMatch = "If-Match",
+  IfNoneMatch = "If-None-Match",
+  IfModifiedSince = "If-Modified-Since",
+  IfUnmodifiedSince = "If-Unmodified-Since",
+  UserAgent = "User-Agent",
+  Upgrade = "Upgrade",
+  Via = "Via",
+}
+
+export enum HTTPMethod {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
+  PATCH = "PATCH",
+  HEAD = "HEAD",
+  OPTIONS = "OPTIONS",
+  CONNECT = "CONNECT",
+  TRACE = "TRACE",
+}
