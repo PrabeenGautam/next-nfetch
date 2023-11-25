@@ -11,7 +11,7 @@ const defaults: RequestCommonConfig = {
   data: undefined,
   method: "get",
   timeout: 0,
-  timeoutMessage: "Network Error. Failed to fetch",
+  timeoutMessage: "Request Timeout. Failed to fetch",
   params: {},
   headers: commonHeaders,
   next: {

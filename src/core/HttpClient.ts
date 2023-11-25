@@ -3,6 +3,8 @@ import InterceptorManager from "./InterceptorManager";
 import mergeObjects from "../helper/mergeObject";
 import { Interceptor, RequestCommonConfig, RequestWithUrlConfig } from "../types/global";
 import getHeaders from "../helper/getHeaders";
+import HttpError from "./HttpError";
+import HttpResponse from "./HttpResponse";
 
 class HttpClient {
   private defaults: RequestWithUrlConfig;
@@ -20,6 +22,14 @@ class HttpClient {
 
       let requestConfig = mergeObjects(this.defaults, instanceConfig) as BaseConfig;
 
+      const requestObject = {
+        data: requestConfig.data,
+        method: requestConfig.method!,
+        timeout: requestConfig.timeout!,
+        url: "",
+        headers: {},
+      };
+
       const requestHeaders = this.buildHeaders(requestConfig.headers);
 
       const requestOptions = {
@@ -35,9 +45,72 @@ class HttpClient {
       }
 
       await this.executeRequestInterceptors(requestOptions);
-
       const endpoint = this.buildUrl(requestConfig.url, requestConfig.params);
+
       const controller = new AbortController();
+
+      requestObject.url = endpoint;
+      requestObject.headers = getHeaders(requestOptions.headers);
+
+      const timeoutId = setTimeout(() => {
+        if (this.defaults.timeout) {
+          controller.abort();
+          reject(
+            new HttpError({
+              message: this.defaults.timeoutMessage || "Request Timeout",
+              request: requestObject,
+            })
+          );
+        }
+      }, this.defaults.timeout);
+
+      try {
+        const response = await fetch(endpoint, {
+          ...requestOptions,
+          signal: controller.signal,
+        });
+
+        const resData = await response.json();
+
+        if (response.ok) {
+          resolve(
+            new HttpResponse({
+              data: resData,
+              request: requestObject,
+              response,
+            })
+          );
+        }
+
+        if (!response.ok) {
+          reject(
+            new HttpError({
+              message: `Request failed with status ${response.status}`,
+              request: requestObject,
+              response: {
+                data: resData,
+                status: response.status,
+                statusText: response.statusText,
+              },
+            })
+          );
+        }
+      } catch (error) {
+        const networkError = error instanceof TypeError && error.message === "Failed to fetch";
+
+        if (networkError) {
+          reject(
+            new HttpError({
+              message: `Network Error. Failed to fetch`,
+              name: "TimeoutError",
+              request: requestObject,
+            })
+          );
+        }
+        reject(error);
+      } finally {
+        clearTimeout(timeoutId);
+      }
     });
   }
 
