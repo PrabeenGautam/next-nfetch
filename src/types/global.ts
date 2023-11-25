@@ -71,6 +71,8 @@ export interface HTTPRequestDetails {
   method: HTTPMethod;
   timeout: number;
   url: string;
+  cache: RequestCache;
+  next: NextFetchRequestConfig;
 }
 
 export interface HTTPResponseDetails {

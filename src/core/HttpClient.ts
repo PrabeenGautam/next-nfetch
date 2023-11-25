@@ -36,6 +36,8 @@ class HttpClient {
         timeout: requestConfig.timeout!,
         url: "",
         headers: {},
+        cache: requestConfig.cache!,
+        next: requestConfig.next!,
       };
 
       const requestHeaders = this.buildHeaders(requestConfig.headers);
