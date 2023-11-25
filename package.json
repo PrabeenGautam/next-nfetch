@@ -1,6 +1,6 @@
 {
   "name": "next-nfetch",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Simple HTTP Client for browser and nextjs",
   "main": "dist/index.js",
   "directories": {
