@@ -6,7 +6,6 @@ export const commonHeaders = {
 };
 
 const defaults: RequestCommonConfig = {
-  cache: "no-cache",
   data: undefined,
   method: "get",
   timeout: 0,
