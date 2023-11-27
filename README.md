@@ -71,7 +71,7 @@ const response = httpClient({
 | method         | string        | get                                   | no
 | headers        | Headers       |                                       | no
 | params         | Object        | { }                                   | no
-| next           | Object        | { revalidate = false, tags: [ ] }     | no
+| next           | Object        | { }     | no
 | data           | any           | undefined                             | no                            
 | timeout        | number        | 0                                     | no                                         
 | cache          | RequestCache  | no-cache                              | no
